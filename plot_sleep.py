@@ -16,11 +16,21 @@ levelnr = {
 with open('tokens.json') as f:
     tokens = json.load(f)
 
+def update_tokens(token):
+    with open('tokens.json', 'r') as f:
+        data = json.load(f)
+    data['users'][token['user_id']] = token
+    with open('tokens.json', 'w') as f:
+        json.dump(data, f)
+
 for user in tokens['users'].values():
     client = fitbit.Fitbit(
         tokens['client_id'], tokens['client_secret'],
         access_token=user['access_token'],
-        refresh_token=user['refresh_token'])
+        refresh_token=user['refresh_token'],
+        expires_at=user['expires_at'],
+        refresh_cb=update_tokens
+    )
     client.API_VERSION = 1.2
     if len(sys.argv) > 1:
         date = sys.argv[1]
