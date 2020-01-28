@@ -37,15 +37,16 @@ for user in tokens['users'].values():
     else:
         date = None
     sleep = client.sleep(date=date)
-    df = pd.DataFrame(sleep['sleep'][0]['levels']['data'])
-    df.dateTime = pd.to_datetime(df.dateTime)
-    #df.seconds = pd.to_timedelta(df.seconds, unit='s')
-    df['levelnr'] = df.level.map(levelnr)
-    df = df.set_index('dateTime')
-    #breakpoint()
-    print(df)
-    #df.level.plot()
-    plt.step(df.index.to_list(), df.levelnr.to_list(), where='post')
-    plt.yticks(list(levelnr.values()), list(levelnr.keys()))
+    for period in sleep['sleep']:
+        df = pd.DataFrame(period['levels']['data'])
+        df.dateTime = pd.to_datetime(df.dateTime)
+        #df.seconds = pd.to_timedelta(df.seconds, unit='s')
+        df['levelnr'] = df.level.map(levelnr)
+        df = df.set_index('dateTime')
+        #breakpoint()
+        print(df)
+        #df.level.plot()
+        plt.step(df.index.to_list(), df.levelnr.to_list(), where='post')
+        plt.yticks(list(levelnr.values()), list(levelnr.keys()))
 
 plt.show()
