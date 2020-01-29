@@ -3,6 +3,7 @@ import json
 import fitbit
 import pandas as pd
 import matplotlib.pyplot as plt
+from datetime import date
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
@@ -16,14 +17,13 @@ def update_tokens(token):
     with open('tokens.json', 'w') as f:
         json.dump(data, f)
 
-if len(sys.argv) == 2:
+if len(sys.argv) > 3:
     date = sys.argv[1]
-    activities = ['heart']
-elif len(sys.argv) > 2:
-    date = sys.argv[1]
-    activities = sys.argv[2:]
+    resolution = sys.argv[2]
+    activities = sys.argv[3:]
 else:
-    date = 'today'
+    date = date.today().strftime("%Y-%m-%d")
+    resolution = '1min'
     activities = ['heart']
 
 for act in activities:
@@ -39,12 +39,27 @@ for act in activities:
         ts = client.intraday_time_series(
             f'activities/{act}',
             base_date=date,
-            detail_level='15min',
+            detail_level=resolution,
         )[f'activities-{act}-intraday']['dataset']
         df = pd.DataFrame(ts)
-        df.time = pd.to_datetime(df.time).dt.time
+        df.time = pd.to_datetime(date+' '+df.time)
         df = df.set_index('time')
+        height = df.value.max()
+
         plt.plot(df.index.to_list(), df.value.to_list())
         plt.ylabel(act)
+
+        log = client.activity_logs_list(after_date=date)
+        df = pd.DataFrame(log['activities'])
+        df.startTime = pd.to_datetime(df.startTime).dt.tz_localize(None)
+        df.duration = pd.to_timedelta(df.duration, unit='ms')
+        df['endTime'] = df.startTime + df.duration
+        df = df.set_index('logId')
+        for idx, row in df.iterrows():
+            plt.annotate(row['activityName'],
+                xy=(row['startTime'], height),
+                xytext=(row['endTime'], height),
+                arrowprops={'arrowstyle': '|-|'},
+                verticalalignment='center')
 
 plt.show()

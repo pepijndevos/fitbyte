@@ -1,4 +1,4 @@
-fitbit
+git+https://github.com/pepijndevos/python-fitbit
 cherrypy
 pandas
 matplotlib
