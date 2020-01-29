@@ -16,6 +16,6 @@ Register an app for the Fitbit API
 pip install -r requirements.txt
 python gather_keys_oauth2.py <id> <secret> # repeat for each user
 python plot_sleep.py yyyy-mm-dd
-python plot_activity.py yyyy-mm-dd heart steps calories
+python plot_activity.py yyyy-mm-dd 1min heart steps calories
 
 ```
