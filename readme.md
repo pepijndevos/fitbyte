@@ -3,6 +3,7 @@
 **Plot shared activities**
 
 ![sleep example plot](sleep_example.png)
+![steps example plot](steps_example.png)
 
 This repo contains a collection of scripts to make plots from Fitbit data of multiple users.
 
@@ -15,5 +16,6 @@ Register an app for the Fitbit API
 pip install -r requirements.txt
 python gather_keys_oauth2.py <id> <secret> # repeat for each user
 python plot_sleep.py yyyy-mm-dd
+python plot_activity.py yyyy-mm-dd heart steps calories
 
 ```
