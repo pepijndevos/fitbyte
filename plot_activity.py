@@ -51,6 +51,7 @@ for act in activities:
 
         log = client.activity_logs_list(after_date=date)
         df = pd.DataFrame(log['activities'])
+        if df.empty: continue
         df.startTime = pd.to_datetime(df.startTime).dt.tz_localize(None)
         df.duration = pd.to_timedelta(df.duration, unit='ms')
         df['endTime'] = df.startTime + df.duration
